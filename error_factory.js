@@ -42,6 +42,7 @@ const Promise = require('bluebird');
  */
 
 function customError(name, msg, callback, extras){
+
 	Error.captureStackTrace(this, this.constructor);
 	this.name = name;
 	this.msg = msg;
@@ -51,6 +52,14 @@ function customError(name, msg, callback, extras){
 }
 
 require('util').inherits(customError, Error);
+
+function customErrorWrapper(name, callback, extras){
+	var ret = function(msg) {
+		return errorFactory.add(name, msg, callback, extras);
+	}
+	require('util').inherits(ret, Error);
+	return ret;
+}
 
 
 /**
@@ -64,6 +73,12 @@ var ErrorFactory = function(){
 	this.errorHandlers = new Map();
 }
 
+var errorFactory = new ErrorFactory();
+
+ErrorFactory.prototype.create = function(name, callback, extras){
+	return customErrorWrapper(name, callback, extras);
+}
+
 /**
  * This method creates an error with specified name, message, callback and extras
  *
@@ -75,7 +90,7 @@ var ErrorFactory = function(){
   *
  */
 
-ErrorFactory.prototype.create = function(name, msg, callback, extras){
+ErrorFactory.prototype.add = function(name, msg, callback, extras){
 	this.errorSet.add(name);
 	return new customError(name, msg, callback, extras);
 }
@@ -199,7 +214,7 @@ ErrorFactory.prototype.flush = function(){
  *
  */
 
-ErrorFactory.prototype.addHandler(name, handler){
+ErrorFactory.prototype.addHandler = function(name, handler){
 	this.errorHandlers.set(name, handler);
 }
 
@@ -212,10 +227,10 @@ ErrorFactory.prototype.addHandler(name, handler){
  *
  */
 
-ErrorFactory.prototype.getHandler(name){
+ErrorFactory.prototype.getHandler = function(name){
 	return this.errorHandlers.get(name);
 }
 
 /* Export the factory */
 
-module.exports = new ErrorFactory();
+module.exports = errorFactory;
