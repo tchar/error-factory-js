@@ -22,5 +22,8 @@
     "express"
   ],
   "author": "Tilemachos Charalampous",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.1"
+  }
 }
