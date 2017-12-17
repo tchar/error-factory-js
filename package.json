@@ -1,0 +1,26 @@
+{
+  "name": "error-factory",
+  "version": "0.0.1",
+  "description": "A module for creating errors and handling them in a dynamic way",
+  "main": "error_factory.js",
+  "directories": {
+    "test": "test",
+    "examples": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "error",
+    "errors",
+    "error",
+    "factory",
+    "dynamic",
+    "error",
+    "dynamic",
+    "errors",
+    "express"
+  ],
+  "author": "Tilemachos Charalampous",
+  "license": "MIT"
+}
