@@ -262,12 +262,11 @@ ErrorFactory.prototype.getHandler = function(name){
  * 
  * @param name string the error name
  * @param callback function in case a specific callback needs to be created;
- * @param extras any extras needed to pass to the error
  * @return ErrorFactory or function depending on the parameters passed
  *
  */
 
-function errorFactoryWrapper(name, callback, extras){
+function errorFactoryWrapper(name, callback){
 	if (arguments.length === 0){
 		return errorFactory;
 	} else {
