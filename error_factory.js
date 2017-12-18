@@ -66,9 +66,9 @@ require('util').inherits(customError, Error);
 
 function customErrorWrapper(name, callback){
 	
-	function customErrorSingleMode(msg, extras){
+	function customErrorSimpleMode(msg, extras){
 		if (!this){
-			return new customErrorSingleMode(msg, extras);
+			return new customErrorSimpleMode(msg, extras);
 		}
 		Error.captureStackTrace(this, this.constructor);
 		this.name = name;
@@ -78,9 +78,9 @@ function customErrorWrapper(name, callback){
 		this.createdByErrorFactory = true;
 		errorFactory.create(name, msg, callback, extras);
 	}
-	require('util').inherits(customErrorSingleMode, Error);
+	require('util').inherits(customErrorSimpleMode, Error);
 
-	return customErrorSingleMode;
+	return customErrorSimpleMode;
 }
 
 
