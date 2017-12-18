@@ -31,27 +31,6 @@
 
 const Promise = require('bluebird');
 
-/**
- *
- * This function is used to create custom errors
- *
- * @param name string the error name
- * @param msg string the error message
- * @param callback function to call if you wish to handle it differently
- *
- */
-
-function customError(name, msg, callback, extras){
-
-	Error.captureStackTrace(this, this.constructor);
-	this.name = name;
-	this.message = msg;
-	this.handle = callback;
-	this.extras = extras;
-	this.createdByErrorFactory = true;
-}
-
-require('util').inherits(customError, Error);
 
 /**
  *
@@ -66,21 +45,50 @@ require('util').inherits(customError, Error);
 
 function customErrorWrapper(name, callback){
 	
-	function customErrorSimpleMode(msg, extras){
+	function customError(msg, extras){
 		if (!this){
-			return new customErrorSimpleMode(msg, extras);
+			return new customError(msg, extras);
 		}
 		Error.captureStackTrace(this, this.constructor);
-		this.name = name;
-		this.handle = callback;
+		// this.name = name;
 		this.message = msg;
+		this.handle = callback;
 		this.extras = extras;
 		this.createdByErrorFactory = true;
-		errorFactory.create(name, msg, callback, extras);
+		errorFactory.errorSet.add(name);
+		return this;
 	}
-	require('util').inherits(customErrorSimpleMode, Error);
+	require('util').inherits(customError, Error);
+	Object.defineProperties(customError.prototype, {
+	    'name': {
+			enumerable: true,
+			configurable: false,
+			writable: false,
+			value: name
+	    },
+	    'canonicalName': {
+			enumerable: true,
+			configurable: false,
+			writable: false,
+			value: name
+	    }
+  	});
+	Object.defineProperties(customError, {
+	    'name': {
+			enumerable: true,
+			configurable: false,
+			writable: false,
+			value: name
+	    },
+		'canonicalName': {
+			enumerable: true,
+			configurable: false,
+			writable: false,
+			value: name
+		}
+  	});
 
-	return customErrorSimpleMode;
+	return customError;
 }
 
 
@@ -110,8 +118,7 @@ var errorFactory = new ErrorFactory();
  */
 
 ErrorFactory.prototype.create = function(name, msg, callback, extras){
-	this.errorSet.add(name);
-	return new customError(name, msg, callback, extras);
+	return new (customErrorWrapper(name, callback))(msg, extras);
 }
 
 /**
