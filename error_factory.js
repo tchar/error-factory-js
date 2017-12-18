@@ -53,7 +53,6 @@ function customError(name, msg, callback, extras){
 
 require('util').inherits(customError, Error);
 
-
 /**
  *
  * This function is a wrapper for the error to simulate the
@@ -66,9 +65,22 @@ require('util').inherits(customError, Error);
  */
 
 function customErrorWrapper(name, callback){
-	return function(msg, extras) {
-		return errorFactory.create(name, msg, callback, extras);
+	
+	function customErrorSingleMode(msg, extras){
+		if (!this){
+			return new customErrorSingleMode(msg, extras);
+		}
+		Error.captureStackTrace(this, this.constructor);
+		this.name = name;
+		this.handle = callback;
+		this.message = msg;
+		this.extras = extras;
+		this.createdByErrorFactory = true;
+		errorFactory.create(name, msg, callback, extras);
 	}
+	require('util').inherits(customErrorSingleMode, Error);
+
+	return customErrorSingleMode;
 }
 
 
