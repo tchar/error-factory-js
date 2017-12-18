@@ -65,8 +65,8 @@ require('util').inherits(customError, Error);
  *
  */
 
-function customErrorWrapper(name, callback, extras){
-	return function(msg) {
+function customErrorWrapper(name, callback){
+	return function(msg, extras) {
 		return errorFactory.create(name, msg, callback, extras);
 	}
 }
@@ -259,7 +259,7 @@ function errorFactoryWrapper(name, callback, extras){
 	if (arguments.length === 0){
 		return errorFactory;
 	} else {
-		return customErrorWrapper(name, callback, extras);
+		return customErrorWrapper(name, callback);
 	}
 }
 

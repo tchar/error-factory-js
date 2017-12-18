@@ -17,8 +17,8 @@ This module supports a simple mode to create errors and an extended mode to acce
 The simple mode can be accessed by using
 ```javascript
 const ErrorFactory = require('error-factory-js');
-var MyError = ErrorFactory('MyError', callback, extras);
-throw MyError('Some messsage');
+var MyError = ErrorFactory('MyError', callback);
+throw MyError('Some messsage', extras);
 ```
 
 In this context the callback and extras are optional, though
