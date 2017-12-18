@@ -45,7 +45,7 @@ function customError(name, msg, callback, extras){
 
 	Error.captureStackTrace(this, this.constructor);
 	this.name = name;
-	this.msg = msg;
+	this.message = msg;
 	this.handle = callback;
 	this.extras = extras;
 	this.createdByErrorFactory = true;
@@ -53,12 +53,22 @@ function customError(name, msg, callback, extras){
 
 require('util').inherits(customError, Error);
 
+
+/**
+ *
+ * This function is a wrapper for the error to simulate the
+ * new Error("Some message")
+ * @param name string error name
+ * @param callback function
+ * @param extras any extras
+ * @return function
+ *
+ */
+
 function customErrorWrapper(name, callback, extras){
-	var ret = function(msg) {
-		return errorFactory.add(name, msg, callback, extras);
+	return function(msg) {
+		return errorFactory.create(name, msg, callback, extras);
 	}
-	require('util').inherits(ret, Error);
-	return ret;
 }
 
 
@@ -75,9 +85,6 @@ var ErrorFactory = function(){
 
 var errorFactory = new ErrorFactory();
 
-ErrorFactory.prototype.create = function(name, callback, extras){
-	return customErrorWrapper(name, callback, extras);
-}
 
 /**
  * This method creates an error with specified name, message, callback and extras
@@ -90,7 +97,7 @@ ErrorFactory.prototype.create = function(name, callback, extras){
   *
  */
 
-ErrorFactory.prototype.add = function(name, msg, callback, extras){
+ErrorFactory.prototype.create = function(name, msg, callback, extras){
 	this.errorSet.add(name);
 	return new customError(name, msg, callback, extras);
 }
@@ -231,6 +238,31 @@ ErrorFactory.prototype.getHandler = function(name){
 	return this.errorHandlers.get(name);
 }
 
-/* Export the factory */
+/**
+ *
+ * Wrapper function for ErrorFactory.
+ * There are two ways to create an error.
+ * The first way is to create an error class
+ * var MyError= ErrorFactory("MyError");
+ * throw MyError("This is an error");
+ * The second mode is to use the underline ErrorFactory by using
+ * ErrorFactory = ErrorFactory().create("MyError", "This is an error");
+ * 
+ * @param name string the error name
+ * @param callback function in case a specific callback needs to be created;
+ * @param extras any extras needed to pass to the error
+ * @return ErrorFactory or function depending on the parameters passed
+ *
+ */
 
-module.exports = errorFactory;
+function errorFactoryWrapper(name, callback, extras){
+	if (arguments.length === 0){
+		return errorFactory;
+	} else {
+		return customErrorWrapper(name, callback, extras);
+	}
+}
+
+/* Export the wrapper */
+
+module.exports = errorFactoryWrapper;
