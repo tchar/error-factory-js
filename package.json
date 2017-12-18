@@ -1,6 +1,6 @@
 {
   "name": "error-factory-js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A module for creating errors and handling them in a dynamic way",
   "main": "error_factory.js",
   "directories": {
@@ -8,7 +8,7 @@
     "examples": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha ./tests/*.js -t 100000 --reporter spec"
   },
   "keywords": [
     "error",
@@ -25,5 +25,9 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.1"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1",
+    "should": "^13.1.3"
   }
 }
