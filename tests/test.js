@@ -105,7 +105,7 @@ describe('Error Factory', function(){
 	});
 
 	it ('should work with handlers sync', function(done){
-		var messages = ['3', '4'];
+		var messages = [];
 		function func(){
 			messages.push(this.message);
 		}
@@ -118,14 +118,13 @@ describe('Error Factory', function(){
 			if (err instanceof SomeError){
 				err.handle();
 			} else if (err instanceof SomeOtherError){
-				messages.push(error.message);
+				messages.push(err.message);
 			}
 		}
 
 		ErrorFactory().addHandler('MyHandler', new handler());
 		var SomeError = ErrorFactory('SomeError', func);
-		var SomeOtherError = ErrorFactory('SomeOtherError', func);
-		done();
+		var SomeOtherError = ErrorFactory('SomeOtherError');
 		try{
 			throw SomeError('1');
 		} catch(error){
@@ -137,8 +136,52 @@ describe('Error Factory', function(){
 		} catch(error){
 			ErrorFactory().getHandler('MyHandler').handle(error);
 		}
+		assert(messages.length === 2 && messages[0] === '1' && messages[1] === '2', true);
+		done();
 
-		assert(messages[0] === '1' && messages[1] === '2');
+	});
 
+	it ('should work with handlers async', function(done){
+		var messages = [];
+		function func(timeout){
+			var thisObj = this;
+			setTimeout(function() {
+				messages.push(thisObj.message);
+			}, timeout);
+		}
+
+		function handler(){
+	
+		}
+
+		handler.prototype.handle = function(err){
+			if (err instanceof SomeError){
+				ErrorFactory().handleAsync(err, 10);
+			} else if (err instanceof SomeOtherError){
+				ErrorFactory().handleAsync(err, 20);
+			}
+		}
+
+		ErrorFactory().addHandler('MyHandler', new handler());
+		var SomeError = ErrorFactory('SomeError', func);
+		var SomeOtherError = ErrorFactory('SomeOtherError', func);
+		try{
+			throw SomeOtherError('1');
+		} catch(error){
+			ErrorFactory().getHandler('MyHandler').handle(error);
+		}
+
+		try{
+			throw SomeError('2');
+		} catch(error){
+			ErrorFactory().getHandler('MyHandler').handle(error);
+		}
+		setTimeout(function() {
+			messages.sort();
+			assert(messages.length === 2 && messages[0] === '1' && messages[1] === '2', true);
+			done();
+		}, 100);
+		
+		
 	});
 })

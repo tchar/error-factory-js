@@ -146,6 +146,12 @@ app.use(function(err, req, res, next)){
     // Handle other errors not created by this Factory
 }
 ```
+# Tests
+You can run tests with npm test.
+You must install the dev dependencies though:
+mocha
+should
+
 # Examples
 
 ## Simple Example
