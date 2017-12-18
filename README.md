@@ -148,8 +148,11 @@ app.use(function(err, req, res, next)){
 ```
 # Tests
 You can run tests with npm test.
+
 You must install the dev dependencies though:
+
 mocha
+
 should
 
 # Examples
