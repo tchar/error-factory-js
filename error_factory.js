@@ -38,55 +38,38 @@ const Promise = require('bluebird');
  * new Error("Some message")
  * @param name string error name
  * @param callback function
- * @param extras any extras
  * @return function
  *
  */
 
 function customErrorWrapper(name, callback){
-	
-	function customError(msg, extras){
-		if (!this){
-			return new customError(msg, extras);
-		}
-		Error.captureStackTrace(this, this.constructor);
-		// this.name = name;
-		this.message = msg;
-		this.handle = callback;
-		this.extras = extras;
-		this.createdByErrorFactory = true;
-		errorFactory.errorSet.add(name);
-		return this;
-	}
+
+	var properties = {
+        name:{
+          enumerable: true,
+          configurable: false,
+          writable: false,
+          value: name
+        }
+    }
+
+	var body = `
+        return function ` + name + ` (msg, extras) {
+            if (!this || !(this instanceof ` + name + `)){
+                return new ` + name + `(msg, extras);
+            }
+            Error.apply(this,arguments);
+            Error.captureStackTrace(this,this.constructor);
+            Object.defineProperties(this, properties);
+            this.message = msg;
+            this.extras = extras;
+            this.handle = callback;
+        }`;
+
+    var customError = Function('name, callback, properties', body)(name, callback, properties);
+
 	require('util').inherits(customError, Error);
-	Object.defineProperties(customError.prototype, {
-	    'name': {
-			enumerable: true,
-			configurable: false,
-			writable: false,
-			value: name
-	    },
-	    'canonicalName': {
-			enumerable: true,
-			configurable: false,
-			writable: false,
-			value: name
-	    }
-  	});
-	Object.defineProperties(customError, {
-	    'name': {
-			enumerable: true,
-			configurable: false,
-			writable: false,
-			value: name
-	    },
-		'canonicalName': {
-			enumerable: true,
-			configurable: false,
-			writable: false,
-			value: name
-		}
-  	});
+	errorFactory.errorSet.add(name);
 
 	return customError;
 }
@@ -131,7 +114,7 @@ ErrorFactory.prototype.create = function(name, msg, callback, extras){
  */
 
 ErrorFactory.prototype.exists = function(error){
-	return this.errorSet.has(error.name) && error.createdByErrorFactory;
+	return this.errorSet.has(error.name);
 }
 
 

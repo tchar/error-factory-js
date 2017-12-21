@@ -5,10 +5,11 @@ const ErrorFactory = require('../error_factory');
 describe('Error Factory', function(){
 	it('should work in simple mode', function(done){
 		var message;
+		var MyError = ErrorFactory('MyError');
 		try{
-			var MyError = ErrorFactory('MyError');
 			throw MyError('A message');
 		} catch(err){
+			assert(err instanceof MyError, true);
 			message = err.message;
 		} finally{
 			assert(message === 'A message', true);
@@ -23,10 +24,12 @@ describe('Error Factory', function(){
 			message = this.message;
 			extras = this.extras;
 		}
+
+		var MyError = ErrorFactory('MyError', func);
 		try{
-			var MyError = ErrorFactory('MyError', func);
-			throw MyError('A message', {value: 1});
+			throw new MyError('A message', {value: 1});
 		} catch(error){
+			assert(error instanceof MyError, true);
 			error.handle();
 		} finally {
 			assert(message === 'A message' && extras.value === 1, true);
@@ -90,10 +93,11 @@ describe('Error Factory', function(){
 			message = this.message;
 			extras = this.extras;
 		}
+		var SomeError = ErrorFactory('SomeError', func)
 		try{
-			var SomeError = ErrorFactory('SomeError', func)
 			throw SomeError('A message', {value: 1});
 		} catch(error){
+			assert(error instanceof SomeError, true);
 			ErrorFactory().handleAsync(error);
 		} finally {
 			assert(typeof message === 'undefined' && extras.value === 0, true);
@@ -128,12 +132,14 @@ describe('Error Factory', function(){
 		try{
 			throw SomeError('1');
 		} catch(error){
+			assert(error instanceof SomeError, true);
 			ErrorFactory().getHandler('MyHandler').handle(error);
 		}
 
 		try{
 			throw SomeOtherError('2');
 		} catch(error){
+			assert(error instanceof SomeOtherError, true);
 			ErrorFactory().getHandler('MyHandler').handle(error);
 		}
 		assert(messages.length === 2 && messages[0] === '1' && messages[1] === '2', true);
@@ -168,12 +174,14 @@ describe('Error Factory', function(){
 		try{
 			throw SomeOtherError('1');
 		} catch(error){
+			assert(error instanceof SomeOtherError, true);
 			ErrorFactory().getHandler('MyHandler').handle(error);
 		}
 
 		try{
 			throw SomeError('2');
 		} catch(error){
+			assert(error instanceof SomeError, true);
 			ErrorFactory().getHandler('MyHandler').handle(error);
 		}
 		setTimeout(function() {
