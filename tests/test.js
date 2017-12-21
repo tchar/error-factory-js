@@ -42,6 +42,7 @@ describe('Error Factory', function(){
 		try{
 			throw ErrorFactory().create('MyError', 'A message');
 		} catch(err){
+			assert(err instanceof ErrorFactory().getErrorConstructor('MyError'));
 			message = err.message;
 		} finally{
 			assert(message === 'A message', true);
@@ -59,6 +60,7 @@ describe('Error Factory', function(){
 		try{
 			throw ErrorFactory().create('MyError', 'A message', func, {value: 1});
 		} catch(error){
+			assert(error instanceof ErrorFactory().getErrorConstructor('MyError'));
 			error.handle();
 		} finally {
 			assert(message === 'A message' && extras.value === 1, true);
@@ -76,6 +78,7 @@ describe('Error Factory', function(){
 		try{
 			throw ErrorFactory().create('MyError', 'A message', func, {value: 1});
 		} catch(error){
+			assert(error instanceof ErrorFactory().getErrorConstructor('MyError'));
 			ErrorFactory().handleAsync(error);
 		} finally {
 			assert(typeof message === 'undefined' && extras.value === 0, true);
@@ -192,4 +195,18 @@ describe('Error Factory', function(){
 		
 		
 	});
+
+	it('should not work for stupid error names', function(done){
+		var errNames = ['+1', '2', 4, '-zf', '%123', '123', '1a'];
+		errNames.forEach(function(item){
+			var err = new Error();
+			try{
+				var MyError = ErrorFactory('+weaf');
+			} catch(error){
+				err = error;
+			}	
+			assert(err.message === 'Invalid error name');
+		})
+		done();
+	})
 })

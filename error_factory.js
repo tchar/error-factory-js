@@ -20,7 +20,7 @@
 
  * The fourth way is to handle the errors in a more conventional way as:
  * if (error.name === 'someError'){
- *		doSomething();
+ *      doSomething();
  * }
  *
  * @author Tilemachos Charalampous
@@ -44,34 +44,40 @@ const Promise = require('bluebird');
 
 function customErrorWrapper(name, callback){
 
-	var properties = {
-        name:{
-          enumerable: true,
-          configurable: false,
-          writable: false,
-          value: name
-        }
+    var nameProperty = {
+        enumerable: true,
+        configurable: false,
+        writable: false,
+        value: name
     }
 
-	var body = `
-        return function ` + name + ` (msg, extras) {
+    var body = `
+        return function ` + name + ` (message, extras) {
             if (!this || !(this instanceof ` + name + `)){
-                return new ` + name + `(msg, extras);
+                return new ` + name + `(message, extras);
             }
             Error.apply(this,arguments);
             Error.captureStackTrace(this,this.constructor);
-            Object.defineProperties(this, properties);
-            this.message = msg;
+            Object.defineProperty(this, 'message', {
+                enumerable: true,
+                configurable: false,
+                value: message
+            });
+            Object.defineProperty(this, 'name', nameProperty);
             this.extras = extras;
             this.handle = callback;
         }`;
 
-    var customError = Function('name, callback, properties', body)(name, callback, properties);
+    try {
+        var customError = Function('name, callback, nameProperty', body)(name, callback, nameProperty);
+    } catch (err){
+        throw Error('Invalid error name');
+    }
 
-	require('util').inherits(customError, Error);
-	errorFactory.errorSet.add(name);
+    require('util').inherits(customError, Error);
+    errorFactory.errorSet.set(name, customError);
 
-	return customError;
+    return customError;
 }
 
 
@@ -82,8 +88,8 @@ function customErrorWrapper(name, callback){
  */
 
 var ErrorFactory = function(){
-	this.errorSet = new Set();
-	this.errorHandlers = new Map();
+    this.errorSet = new Map();
+    this.errorHandlers = new Map();
 }
 
 var errorFactory = new ErrorFactory();
@@ -93,15 +99,15 @@ var errorFactory = new ErrorFactory();
  * This method creates an error with specified name, message, callback and extras
  *
  * @param name string name of the error
- * @param msg string message of the error
+ * @param message string message of the error
  * @param callback function of the error, as error.handle
  * @param extras any extras passed to error, as error.extras
  * @return error the error produced
   *
  */
 
-ErrorFactory.prototype.create = function(name, msg, callback, extras){
-	return new (customErrorWrapper(name, callback))(msg, extras);
+ErrorFactory.prototype.create = function(name, message, callback, extras){
+    return new (customErrorWrapper(name, callback))(message, extras);
 }
 
 /**
@@ -114,7 +120,7 @@ ErrorFactory.prototype.create = function(name, msg, callback, extras){
  */
 
 ErrorFactory.prototype.exists = function(error){
-	return this.errorSet.has(error.name);
+    return this.errorSet.has(error.name);
 }
 
 
@@ -128,7 +134,7 @@ ErrorFactory.prototype.exists = function(error){
  */
 
 ErrorFactory.prototype.canHandle = function(error){
-	return (this.exists(error) && error.handle) ? true : false;
+    return (this.exists(error) && error.handle) ? true : false;
 }
 
 /**
@@ -137,17 +143,17 @@ ErrorFactory.prototype.canHandle = function(error){
  *
  * @param error error
  * @param params any other parameters needed by error.handle
- * 				 function
+ *               function
  * @return boolean true if handled else false
  */
 
 ErrorFactory.prototype.handle = function(error, ...params) {
-	if (this.canHandle(error)){
-		error.handle.apply(error, params);
-		return true;
-	} else  {
-		return false;
-	}
+    if (this.canHandle(error)){
+        error.handle.apply(error, params);
+        return true;
+    } else  {
+        return false;
+    }
 }
 
 /**
@@ -157,18 +163,18 @@ ErrorFactory.prototype.handle = function(error, ...params) {
  *
  * @param error error
  * @param params any other parameters needed by the callback
- *				 defined when creating the error
+ *               defined when creating the error
  * @return boolean true if handled or false
  */
 
 ErrorFactory.prototype.handleAsync = function(error, ...params) {
-	let thisContext = this;
-	Promise.resolve(this.canHandle(error)).then(function(canHandle) {
-		if (canHandle){
-			error.handle.apply(error, params);
-		}
-	});
-	return this.canHandle(error);
+    let thisContext = this;
+    Promise.resolve(this.canHandle(error)).then(function(canHandle) {
+        if (canHandle){
+            error.handle.apply(error, params);
+        }
+    });
+    return this.canHandle(error);
 }
 
 /*
@@ -178,19 +184,19 @@ ErrorFactory.prototype.handleAsync = function(error, ...params) {
  * else it calls next(err).
  *
  * Options object: {
- * 		handleAsync: boolean if you want to handle using handleAsync (Promises), default false	
+ *      handleAsync: boolean if you want to handle using handleAsync (Promises), default false  
  * }
  * @param options javascript object options for the Express Handler
  */
 
 ErrorFactory.prototype.expressHandler = function(options){
-	let thisContext = this;
-	let handleFunc = (options && options.handleAsync) ? this.handleAsync : this.handle;
-	return function(error, req, res, next) {
-		if (!handleFunc.call(thisContext, error, req, res, next)){
-			next(error);
-		}
-	}
+    let thisContext = this;
+    let handleFunc = (options && options.handleAsync) ? this.handleAsync : this.handle;
+    return function(error, req, res, next) {
+        if (!handleFunc.call(thisContext, error, req, res, next)){
+            next(error);
+        }
+    }
 }
 
 /**
@@ -202,7 +208,7 @@ ErrorFactory.prototype.expressHandler = function(options){
  */
 
 ErrorFactory.prototype.remove = function(error){
-	this.errorSet.delete(error.name);
+    this.errorSet.delete(error.name);
 }
 
 /**
@@ -211,7 +217,7 @@ ErrorFactory.prototype.remove = function(error){
  */
 
 ErrorFactory.prototype.flush = function(){
-	this.errorSet.clear();
+    this.errorSet.clear();
 }
 
 /**
@@ -224,7 +230,7 @@ ErrorFactory.prototype.flush = function(){
  */
 
 ErrorFactory.prototype.addHandler = function(name, handler){
-	this.errorHandlers.set(name, handler);
+    this.errorHandlers.set(name, handler);
 }
 
 /**
@@ -237,7 +243,25 @@ ErrorFactory.prototype.addHandler = function(name, handler){
  */
 
 ErrorFactory.prototype.getHandler = function(name){
-	return this.errorHandlers.get(name);
+    return this.errorHandlers.get(name);
+}
+
+/*
+ * This method is used to get the Error constructor of a
+ * specific error
+ *
+ * @error javascript object of the error
+ * @return function the constructor of the error
+ *
+ */
+
+ErrorFactory.prototype.getErrorConstructor = function(name){
+    var ErrorConstructor = this.errorSet.get(name);
+    if (typeof ErrorConstructor === 'function'){
+        return ErrorConstructor;
+    } else {
+        return Error;
+    }
 }
 
 /**
@@ -257,11 +281,11 @@ ErrorFactory.prototype.getHandler = function(name){
  */
 
 function errorFactoryWrapper(name, callback){
-	if (arguments.length === 0){
-		return errorFactory;
-	} else {
-		return customErrorWrapper(name, callback);
-	}
+    if (arguments.length === 0){
+        return errorFactory;
+    } else {
+        return customErrorWrapper(name, callback);
+    }
 }
 
 /* Export the wrapper */

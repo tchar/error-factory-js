@@ -32,7 +32,7 @@ const ErrorFactory = require('error-factory-js');
 and call ```ErrorFactory().someMethod()``` to access the method
 
 The supported methods are:
-### create()
+### create(name, msg, callback, extras)
 This method is equivalent to the simple mode's error creation
 ```javascript
 try{
@@ -43,7 +43,7 @@ try{
     err.extras // The extras
 }
 ```
-### exists()
+### exists(error)
 This method returns true if the error was created by this ErrorFactory, false otherwise
 ```javascript
 try {
@@ -52,7 +52,7 @@ try {
     ErrorFactory().exists(err) // This is true
 }
 ```
-### canHandle()
+### canHandle(error)
 This method returns true if a callback was specified when creating an error, false otherwise
 ```javascript
 try{
@@ -62,7 +62,7 @@ try{
     ErrorFactory().canHandle(err) // This is true
 }
 ```
-### handle()
+### handle(error)
 This method handles the error and returns true if the error was handled false otherwise
 ```javascript
 try{
@@ -72,7 +72,7 @@ try{
     ErrorFactory().handle(err) // This is true and error was handled using callback
 }
 ```
-### handleAsync()
+### handleAsync(error)
 This method is like handle() but handles the error using bluebird's Promises
 ```javascript
 try{
@@ -98,7 +98,7 @@ app.use(function(err, req, res, next)){
     // Handle other errors not created by this Factory
 }
 ```
-### remove()
+### remove(error)
 Removes an error from this factory, so now it can not be handled by handle(), handleAsync() etc.
 ```javascript
 try{
@@ -126,7 +126,7 @@ try{
     ErrorFactory().handleAsync(err) // this is false
 }
 ```
-### addHandler() / getHandler()
+### addHandler(name, handler) / getHandler(name)
 Sets/gets a handler with a name for later use
 Following code is for express, but can be used for other instances too.
 ```javascript
@@ -146,6 +146,21 @@ app.use(function(err, req, res, next)){
     // Handle other errors not created by this Factory
 }
 ```
+### getErrorConstructor(name)
+Gets the constructor of a specified error by name.
+This is useful when creating errors through the ErrorFactory `create()`
+method.
+```javascript
+try{
+    throw ErrorFactory().create('MyError', 'Some Message', callback, extras);
+} catch(err){
+    console.log(err instanceof ErrorFactory().getErrorConstructor('MyError')) // This is true
+    err.message // The error message
+    err.handle() // To call the handle function
+    err.extras // The extras
+}
+```
+
 # Tests
 You can run tests with npm test.
 
