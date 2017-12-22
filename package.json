@@ -1,6 +1,6 @@
 {
   "name": "error-factory-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A module for creating errors and handling them in a dynamic way",
   "main": "error_factory.js",
   "repository": {

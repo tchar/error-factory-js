@@ -1,7 +1,8 @@
 # error-factory-js
 A JavaScript Factory for creating and handling errors
 
-This module can be used to create custom JavaScript Errors and handle them
+This module can be used to create custom JavaScript Errors and handle them.
+
 When creating an Error a function can be passed to it, so when catching it
 you can handle it by calling error.handle(args);
 
@@ -130,13 +131,16 @@ try{
 Sets/gets a handler with a name for later use
 Following code is for express, but can be used for other instances too.
 ```javascript
+const app = require('express')();
+const ErrorFactory = require('error-factory-js');
 app.use('/' function(req, res, next){
     next(ErrorFactory().create('MyError', callback));
 })
 
-var MyHandler = function(args){
+var MyHandler = function(err, req, res, next){
     // implement something
 }
+
 
 ErrorFactory().addHandler('SomeHandler', MyHandler);
 
@@ -171,6 +175,10 @@ mocha
 should
 
 # Examples
+
+You can find examples under the examples folder.
+
+Below are some examples of error-factory-js usage.
 
 ## Simple Example
 ```javascript

@@ -134,7 +134,7 @@ ErrorFactory.prototype.exists = function(error){
  */
 
 ErrorFactory.prototype.canHandle = function(error){
-    return (this.exists(error) && error.handle) ? true : false;
+    return (this.exists(error) && typeof error.handle === 'function') ? true : false;
 }
 
 /**
