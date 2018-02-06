@@ -31,6 +31,12 @@
 
 const Promise = require('bluebird');
 
+function getStackTraceCleaned(stack){
+    stack = stack.split('\n');
+    stack.splice(1, 1);
+    return stack.join('\n');
+}
+
 
 /**
  *
@@ -64,12 +70,13 @@ function customErrorWrapper(name, callback){
                 value: message
             });
             Object.defineProperty(this, 'name', nameProperty);
+            this.stack = getStack(this.stack);
             this.extras = extras;
             this.handle = callback;
         }`;
 
     try {
-        var customError = Function('name, callback, nameProperty', body)(name, callback, nameProperty);
+        var customError = Function('name, getStack, callback, nameProperty', body)(name, getStackTraceCleaned, callback, nameProperty);
     } catch (err){
         throw Error('Invalid error name');
     }
