@@ -33,6 +33,12 @@ const ErrorFactory = require('error-factory-js');
 and call ```ErrorFactory().someMethod()``` to access the method
 
 The supported methods are:
+### setPromiseLibrary(promiseLib)
+This method sets the promise library to be used for handleAsync (default: bluebird)
+```javascript
+const ErrorFactory = require('error-factory-js')
+ErrorFactory().setPromiseLibrary(Promise) // use builtin promise library
+```
 ### create(name, msg, callback, extras)
 This method is equivalent to the simple mode's error creation
 ```javascript

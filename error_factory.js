@@ -29,7 +29,7 @@
 
 "use strict";
 
-const Promise = require('bluebird');
+var Promise = require('bluebird');
 
 function getStackTraceCleaned(stack){
     stack = stack.split('\n');
@@ -269,6 +269,15 @@ ErrorFactory.prototype.getErrorConstructor = function(name){
     } else {
         return Error;
     }
+}
+
+ErrorFactory.prototype.setPromiseLibrary = function(promise){
+    if (!promise)
+        throw new Error('Promise library is not defined');
+    if (typeof promise !== 'function'){
+        throw new Error('Invalid promise library');
+    }
+    Promise = promise
 }
 
 /**
