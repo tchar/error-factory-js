@@ -95,6 +95,12 @@ The express handler takes a javascript object as options.
 Options ```{handleAsync: boolean}``` if you want to use handle or handleAsync, default ```false```
 See examples below in how to use it
 ```javascript
+
+var callback = function(err, req, res, next){
+    console.log(this === err) // prints true
+    res.send(err.message)
+}
+
 app.use('/' function(req, res, next){
     next(ErrorFactory().create('MyError', callback));
 })
