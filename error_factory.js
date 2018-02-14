@@ -200,7 +200,7 @@ ErrorFactory.prototype.expressHandler = function(options){
     let thisContext = this;
     let handleFunc = (options && options.handleAsync) ? this.handleAsync : this.handle;
     return function(error, req, res, next) {
-        if (!handleFunc.call(thisContext, error, req, res, next)){
+        if (!handleFunc.call(thisContext, error, error, req, res, next)){
             next(error);
         }
     }

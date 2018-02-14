@@ -1,8 +1,9 @@
 const app = require('express')();
 const ErrorFactory = require('error-factory-js');
 
-var func = function(req, res, next){
-    res.status(500).send(this.message);
+var func = function(err, req, res, next){
+    console.log(this === err) // this prints true
+    res.status(500).send(err.message);
 }
 
 app.use('/', function(req, res, next){
@@ -21,5 +22,7 @@ app.use(ErrorFactory().expressHandler({handleAsync: true}));
 app.use(function(err, req, res, next){
     // Handle the other errors;
 });
+
+app.listen(8081)
 
 // This code will send a status 500 with message 'Hey something went wrong'
