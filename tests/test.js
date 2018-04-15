@@ -1,6 +1,7 @@
 const assert = require('assert');
 const ErrorFactory = require('../index');
 
+'use strict';
 describe('Error Factory', function(){
     it('should work in simple mode', function(done){
         let message;
