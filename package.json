@@ -1,8 +1,8 @@
 {
   "name": "error-factory-js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A module for creating errors and handling them in a dynamic way",
-  "main": "error_factory.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tchar/error-factory-js.git"
@@ -27,11 +27,8 @@
   ],
   "author": "Tilemachos Charalampous",
   "license": "MIT",
-  "dependencies": {
-    "bluebird": "^3.5.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "mocha": "^4.0.1",
-    "should": "^13.1.3"
+    "mocha": "^4.0.1"
   }
 }

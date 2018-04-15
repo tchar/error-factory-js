@@ -1,6 +1,5 @@
 const assert = require('assert')
-const should = require('should');
-const ErrorFactory = require('../error_factory');
+const ErrorFactory = require('../index');
 
 describe('Error Factory', function(){
 	it('should work in simple mode', function(done){
@@ -42,7 +41,7 @@ describe('Error Factory', function(){
 		try{
 			throw ErrorFactory().create('MyError', 'A message');
 		} catch(err){
-			assert(err instanceof ErrorFactory().getErrorConstructor('MyError'));
+			assert(err instanceof ErrorFactory.getErrorConstructor('MyError'));
 			message = err.message;
 		} finally{
 			assert(message === 'A message', true);
@@ -58,9 +57,9 @@ describe('Error Factory', function(){
 			extras = this.extras;
 		}
 		try{
-			throw ErrorFactory().create('MyError', 'A message', func, {value: 1});
+			throw ErrorFactory.create('MyError', 'A message', func, {value: 1});
 		} catch(error){
-			assert(error instanceof ErrorFactory().getErrorConstructor('MyError'));
+			assert(error instanceof ErrorFactory.getErrorConstructor('MyError'));
 			error.handle();
 		} finally {
 			assert(message === 'A message' && extras.value === 1, true);
@@ -76,10 +75,10 @@ describe('Error Factory', function(){
 			extras = this.extras;
 		}
 		try{
-			throw ErrorFactory().create('MyError', 'A message', func, {value: 1});
+			throw ErrorFactory.create('MyError', 'A message', func, {value: 1});
 		} catch(error){
-			assert(error instanceof ErrorFactory().getErrorConstructor('MyError'));
-			ErrorFactory().handleAsync(error);
+			assert(error instanceof ErrorFactory.getErrorConstructor('MyError'));
+			ErrorFactory.handleAsync(error);
 		} finally {
 			assert(typeof message === 'undefined' && extras.value === 0, true);
 			setTimeout(function() {
@@ -101,7 +100,7 @@ describe('Error Factory', function(){
 			throw SomeError('A message', {value: 1});
 		} catch(error){
 			assert(error instanceof SomeError, true);
-			ErrorFactory().handleAsync(error);
+			ErrorFactory.handleAsync(error);
 		} finally {
 			assert(typeof message === 'undefined' && extras.value === 0, true);
 			setTimeout(function() {
@@ -129,21 +128,21 @@ describe('Error Factory', function(){
 			}
 		}
 
-		ErrorFactory().addHandler('MyHandler', new handler());
+		ErrorFactory.addHandler('MyHandler', new handler());
 		var SomeError = ErrorFactory('SomeError', func);
 		var SomeOtherError = ErrorFactory('SomeOtherError');
 		try{
 			throw SomeError('1');
 		} catch(error){
 			assert(error instanceof SomeError, true);
-			ErrorFactory().getHandler('MyHandler').handle(error);
+			ErrorFactory.getHandler('MyHandler').handle(error);
 		}
 
 		try{
 			throw SomeOtherError('2');
 		} catch(error){
 			assert(error instanceof SomeOtherError, true);
-			ErrorFactory().getHandler('MyHandler').handle(error);
+			ErrorFactory.getHandler('MyHandler').handle(error);
 		}
 		assert(messages.length === 2 && messages[0] === '1' && messages[1] === '2', true);
 		done();
@@ -165,27 +164,27 @@ describe('Error Factory', function(){
 
 		handler.prototype.handle = function(err){
 			if (err instanceof SomeError){
-				ErrorFactory().handleAsync(err, 10);
+				ErrorFactory.handleAsync(err, 10);
 			} else if (err instanceof SomeOtherError){
-				ErrorFactory().handleAsync(err, 20);
+				ErrorFactory.handleAsync(err, 20);
 			}
 		}
 
-		ErrorFactory().addHandler('MyHandler', new handler());
+		ErrorFactory.addHandler('MyHandler', new handler());
 		var SomeError = ErrorFactory('SomeError', func);
 		var SomeOtherError = ErrorFactory('SomeOtherError', func);
 		try{
 			throw SomeOtherError('1');
 		} catch(error){
 			assert(error instanceof SomeOtherError, true);
-			ErrorFactory().getHandler('MyHandler').handle(error);
+			ErrorFactory.getHandler('MyHandler').handle(error);
 		}
 
 		try{
 			throw SomeError('2');
 		} catch(error){
 			assert(error instanceof SomeError, true);
-			ErrorFactory().getHandler('MyHandler').handle(error);
+			ErrorFactory.getHandler('MyHandler').handle(error);
 		}
 		setTimeout(function() {
 			messages.sort();
