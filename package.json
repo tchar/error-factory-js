@@ -1,16 +1,11 @@
 {
   "name": "error-factory-js-testing",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "A module for creating errors and handling them in a dynamic way",
   "main": "src/js/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tchar/error-factory-js.git"
-  },
-  "directories": {
-    "test": "test",
-    "examples": "examples",
-    "src/js": "src/js"
   },
   "scripts": {
     "build": "tsc",
