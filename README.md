@@ -30,7 +30,7 @@ The extended mode can be accessed by using
 ```javascript
 const ErrorFactory = require('error-factory-js');
 ```
-and call ```ErrorFactory.someMethod()``` or ```ErrorFactory.someMethod``` to access the method
+and call ```ErrorFactory().someMethod()``` or ```ErrorFactory.someMethod()``` to access the method
 
 The supported methods are:
 ### setPromiseLibrary(promiseLib)
