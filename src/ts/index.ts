@@ -4,8 +4,8 @@
  * @author Tilemachos Charalampous
  */
 'use strict';
-const simple = require('./lib/simple');
-const extended = require('./lib/extended');
+import simple from './simple';
+import extended from './extended';
 
 /**
  * Export simple and extended modules
