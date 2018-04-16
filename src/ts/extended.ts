@@ -13,52 +13,52 @@ import errorFactory from './implementation/error_factory';
 
 class ExtendedErrorFactory {
     
-    public create(...params) {
-        return errorFactory.create.apply(errorFactory, params);
+    public create(name: string, message: string, callback: any, extras: object): any {
+        return errorFactory.create(name, message, callback, extras);
     }
     
-    public exists(...params) {
-        return errorFactory.exists.apply(errorFactory, params);
+    public exists(error: any): boolean {
+        return errorFactory.exists(error);
     };
 
-    public canHandle(...params) {
-        return errorFactory.canHandle.apply(errorFactory, params);
+    public canHandle(error: any): boolean {
+        return errorFactory.canHandle(error);
     };
 
-    public handle(...params) {
-        return errorFactory.handle.apply(errorFactory, params);
+    public handle(error: any, ...params): boolean {
+        return errorFactory.handle.apply(errorFactory, [error].concat(params));
     };
 
-    public handleAsync(...params) {
-        return errorFactory.handleAsync.apply(errorFactory, params);
+    public handleAsync(error, ...params): boolean {
+        return errorFactory.handleAsync.apply(errorFactory, [error].concat(params));
     };
 
-    public expressHandler(...params) {
-        return errorFactory.expressHandler.apply(errorFactory, params);
+    public expressHandler(options: object): any {
+        return errorFactory.expressHandler(options);
     };
 
-    public remove(...params) {
-        return errorFactory.remove.apply(errorFactory, params);
+    public remove(error: any): void {
+        errorFactory.remove(error);
     };
 
-    public flush(...params) {
-        return errorFactory.flush.apply(errorFactory, params);
+    public flush(): void {
+        errorFactory.flush();
     };
 
-    public addHandler(...params) {
-        return errorFactory.addHandler.apply(errorFactory, params);
+    public addHandler(name: string, handler: any): void {
+        errorFactory.addHandler(name, handler);
     };
 
-    public getHandler(...params) {
-        return errorFactory.getHandler.apply(errorFactory, params);
+    public getHandler(name: string): any {
+        return errorFactory.getHandler(name);
     }
 
-    public getErrorConstructor(...params) {
-        return errorFactory.getErrorConstructor.apply(errorFactory, params);
+    public getErrorConstructor(error: any): any {
+        return errorFactory.getErrorConstructor(error);
     };
 
-    public setPromiseLibrary(...params) {
-        return errorFactory.setPromiseLibrary.apply(errorFactory, params);
+    public setPromiseLibrary(promiseLib: any): void {
+        errorFactory.setPromiseLibrary(promiseLib);
     };
 
 }
