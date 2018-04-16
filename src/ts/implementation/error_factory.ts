@@ -64,7 +64,7 @@ class ErrorFactory {
      * @return {boolean} - true if exists else false
      */
     public exists(error: any): boolean {
-        return this.errorSet.has(error.name);
+        return error != null && this.errorSet.has(error.name);
     };
 
 
@@ -77,7 +77,7 @@ class ErrorFactory {
      *
      */
     public canHandle(error: any): boolean {
-        return (this.exists(error) && typeof error.handle === 'function') ? true : false;
+        return this.exists(error) && typeof error.handle === 'function';
     };
 
     /**
@@ -107,13 +107,14 @@ class ErrorFactory {
      *                          defined when creating the error
      * @return {boolean} - true if handled or false
      */
-    public handleAsync(error: any, ...params): boolean {
-        this.PromiseLib.resolve(this.canHandle(error)).then(function (canHandle) {
-            if (canHandle) {
-                error.handle.apply(error, params);
-            }
-        });
-        return this.canHandle(error);
+    public handleAsync(error: any, ...params): Promise<any> {
+        if (this.canHandle(error)){
+            return this.PromiseLib.resolve(null).then(() => {
+                return error.handle.apply(error, params);
+            })
+        } else {
+            return Promise.reject(error);
+        }
     };
 
     /**
@@ -130,10 +131,11 @@ class ErrorFactory {
      */
     public expressHandler(options: any): any {
         let thisContext = this;
-        let handleFunc = (options && options.handleAsync) ? this.handleAsync : this.handle;
         return function (error, req, res, next) {
-            if (!handleFunc.call(thisContext, error, error, req, res, next)) {
-                next(error);
+            if (options && options.handleAsync == true){
+                thisContext.handleAsync.apply(thisContext, [error, error, req, res, next]).catch(err => next(err));
+            } else {
+                thisContext.handle.apply(thisContext, [error, error, req, res, next]);
             }
         };
     };
@@ -146,7 +148,9 @@ class ErrorFactory {
      * @param {object} error - error
      */
     public remove(error: any): void {
-        this.errorSet.delete(error.name);
+        if (error != null){
+            this.errorSet.delete(error.name);
+        }
     };
 
     /**
@@ -163,7 +167,9 @@ class ErrorFactory {
      * @param {function} handler - function handler
      */
     public addHandler(name: string, handler: any): void {
-        this.errorHandlers.set(name, handler);
+        if (name != null || handler != null){
+            this.errorHandlers.set(name, handler);
+        }
     };
 
     /**

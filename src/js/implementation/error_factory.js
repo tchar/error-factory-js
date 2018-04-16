@@ -60,7 +60,7 @@ class ErrorFactory {
      * @return {boolean} - true if exists else false
      */
     exists(error) {
-        return this.errorSet.has(error.name);
+        return error != null && this.errorSet.has(error.name);
     }
     ;
     /**
@@ -72,7 +72,7 @@ class ErrorFactory {
      *
      */
     canHandle(error) {
-        return (this.exists(error) && typeof error.handle === 'function') ? true : false;
+        return this.exists(error) && typeof error.handle === 'function';
     }
     ;
     /**
@@ -104,12 +104,14 @@ class ErrorFactory {
      * @return {boolean} - true if handled or false
      */
     handleAsync(error, ...params) {
-        this.PromiseLib.resolve(this.canHandle(error)).then(function (canHandle) {
-            if (canHandle) {
-                error.handle.apply(error, params);
-            }
-        });
-        return this.canHandle(error);
+        if (this.canHandle(error)) {
+            return this.PromiseLib.resolve(null).then(() => {
+                return error.handle.apply(error, params);
+            });
+        }
+        else {
+            return Promise.reject(error);
+        }
     }
     ;
     /**
@@ -126,10 +128,12 @@ class ErrorFactory {
      */
     expressHandler(options) {
         let thisContext = this;
-        let handleFunc = (options && options.handleAsync) ? this.handleAsync : this.handle;
         return function (error, req, res, next) {
-            if (!handleFunc.call(thisContext, error, error, req, res, next)) {
-                next(error);
+            if (options && options.handleAsync == true) {
+                thisContext.handleAsync.apply(thisContext, [error, error, req, res, next]).catch(err => next(err));
+            }
+            else {
+                thisContext.handle.apply(thisContext, [error, error, req, res, next]);
             }
         };
     }
@@ -142,7 +146,9 @@ class ErrorFactory {
      * @param {object} error - error
      */
     remove(error) {
-        this.errorSet.delete(error.name);
+        if (error != null) {
+            this.errorSet.delete(error.name);
+        }
     }
     ;
     /**
@@ -159,7 +165,9 @@ class ErrorFactory {
      * @param {function} handler - function handler
      */
     addHandler(name, handler) {
-        this.errorHandlers.set(name, handler);
+        if (name != null || handler != null) {
+            this.errorHandlers.set(name, handler);
+        }
     }
     ;
     /**

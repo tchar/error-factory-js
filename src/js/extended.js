@@ -10,50 +10,50 @@ const error_factory_1 = require("./implementation/error_factory");
  * Export the functions
  */
 class ExtendedErrorFactory {
-    create(...params) {
-        return error_factory_1.default.create.apply(error_factory_1.default, params);
+    create(name, message, callback, extras) {
+        return error_factory_1.default.create(name, message, callback, extras);
     }
-    exists(...params) {
-        return error_factory_1.default.exists.apply(error_factory_1.default, params);
-    }
-    ;
-    canHandle(...params) {
-        return error_factory_1.default.canHandle.apply(error_factory_1.default, params);
+    exists(error) {
+        return error_factory_1.default.exists(error);
     }
     ;
-    handle(...params) {
-        return error_factory_1.default.handle.apply(error_factory_1.default, params);
+    canHandle(error) {
+        return error_factory_1.default.canHandle(error);
     }
     ;
-    handleAsync(...params) {
-        return error_factory_1.default.handleAsync.apply(error_factory_1.default, params);
+    handle(error, ...params) {
+        return error_factory_1.default.handle.apply(error_factory_1.default, [error].concat(params));
     }
     ;
-    expressHandler(...params) {
-        return error_factory_1.default.expressHandler.apply(error_factory_1.default, params);
+    handleAsync(error, ...params) {
+        return error_factory_1.default.handleAsync.apply(error_factory_1.default, [error].concat(params));
     }
     ;
-    remove(...params) {
-        return error_factory_1.default.remove.apply(error_factory_1.default, params);
+    expressHandler(options) {
+        return error_factory_1.default.expressHandler(options);
     }
     ;
-    flush(...params) {
-        return error_factory_1.default.flush.apply(error_factory_1.default, params);
+    remove(error) {
+        error_factory_1.default.remove(error);
     }
     ;
-    addHandler(...params) {
-        return error_factory_1.default.addHandler.apply(error_factory_1.default, params);
+    flush() {
+        error_factory_1.default.flush();
     }
     ;
-    getHandler(...params) {
-        return error_factory_1.default.getHandler.apply(error_factory_1.default, params);
-    }
-    getErrorConstructor(...params) {
-        return error_factory_1.default.getErrorConstructor.apply(error_factory_1.default, params);
+    addHandler(name, handler) {
+        error_factory_1.default.addHandler(name, handler);
     }
     ;
-    setPromiseLibrary(...params) {
-        return error_factory_1.default.setPromiseLibrary.apply(error_factory_1.default, params);
+    getHandler(name) {
+        return error_factory_1.default.getHandler(name);
+    }
+    getErrorConstructor(error) {
+        return error_factory_1.default.getErrorConstructor(error);
+    }
+    ;
+    setPromiseLibrary(promiseLib) {
+        error_factory_1.default.setPromiseLibrary(promiseLib);
     }
     ;
 }

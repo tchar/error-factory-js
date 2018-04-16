@@ -1,6 +1,6 @@
 {
   "name": "error-factory-js-testing",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "description": "A module for creating errors and handling them in a dynamic way",
   "main": "src/js/index.js",
   "repository": {
@@ -10,11 +10,12 @@
   "directories": {
     "test": "test",
     "examples": "examples",
-    "src": "src"
+    "src/js": "src/js"
   },
   "scripts": {
     "build": "tsc",
-    "test": "./node_modules/.bin/mocha ./tests/*.js -t 100000 --reporter spec"
+    "test": "./node_modules/.bin/mocha ./tests/*.js -t 100000 --reporter spec",
+    "prepublishOnly": "tsc"
   },
   "keywords": [
     "error",

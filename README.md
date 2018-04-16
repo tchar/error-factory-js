@@ -80,7 +80,8 @@ try{
 }
 ```
 ### handleAsync(error)
-This method is like handle() but handles the error using Promises
+This method is like handle() but handles the error using Promises and returns a promise.
+If the error cannot be handled returns a rejected promise with the error.
 ```javascript
 try{
     var MyError = ErrorFactory('MyError', callback)
