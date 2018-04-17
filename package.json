@@ -1,6 +1,6 @@
 {
   "name": "error-factory-js-testing",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A module for creating errors and handling them in a dynamic way",
   "main": "./lib/dist/index.js",
   "types": "./lib/dist/index.d.ts",

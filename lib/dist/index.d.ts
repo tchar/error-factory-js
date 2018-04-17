@@ -1,1 +1,14 @@
-export {};
+declare const simple: (name: string, callback: any) => any;
+export default simple;
+export declare function create(name: string, message: string, callback: any, extras: object): any;
+export declare function exists(error: any): boolean;
+export declare function canHandle(error: any): boolean;
+export declare function handle(error: any, ...params: any[]): boolean;
+export declare function handleAsync(error: any, ...params: any[]): boolean;
+export declare function expressHandler(options: object): any;
+export declare function remove(error: any): void;
+export declare function flush(): void;
+export declare function addHandler(name: string, handler: any): void;
+export declare function getHandler(name: string): any;
+export declare function getErrorConstructor(error: any): any;
+export declare function setPromiseLibrary(promiseLib: any): void;
