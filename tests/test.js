@@ -1,5 +1,5 @@
 const assert = require('assert');
-const ErrorFactory = require('../src/js/index');
+const ErrorFactory = require('../lib/dist/index');
 
 'use strict';
 describe('Error Factory', function(){

@@ -32,10 +32,17 @@
 import CustomError from './custom_error';
 
 class ErrorFactory {
+    private static instance: ErrorFactory;
     private PromiseLib = Promise;
     protected errorSet: Map<string, any> = new Map();
     private errorHandlers: Map<string, any> = new Map();
 
+    public static getInstance(): ErrorFactory{
+        if (ErrorFactory.instance == null){
+            ErrorFactory.instance = new ErrorFactory();
+        }
+        return ErrorFactory.instance;
+    }
 
     public generate(name: string, callback: any): any {
         const NewError = CustomError.generate(name, callback);
@@ -212,6 +219,8 @@ class ErrorFactory {
         }
         this.PromiseLib = promise;
     };
+
+    private constructor() {}
 }
 
-export default new ErrorFactory();
+export default ErrorFactory;

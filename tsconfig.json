@@ -2,7 +2,8 @@
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
-        "outDir": "src/js",
+        "outDir": "lib/dist",
+        "declaration": true,
         "sourceMap": true
     },
     "files": [
@@ -10,7 +11,7 @@
         "./node_modules/@types/node/index.d.ts"
     ],
     "include": [
-        "src/ts/**/*.ts"
+        "lib/ts/**/*.ts"
     ],
     "exclude": [
         "node_modules"
